@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nerd Haven | Stock & Inventory</title>
+
+  <!-- Favicon & Fonts -->
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Page-only styles (tiny) -->
+  <style>
+    .stock-hero { padding: 80px 20px; }
+    .filters { max-width: 1100px; margin: 30px auto 10px; padding: 14px 16px;
+      background:#0b0b0b;border:1px solid var(--neon-purple);box-shadow:0 0 15px var(--neon-purple);
+      border-radius:12px; display:grid; gap:12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .filters label { display:block; font-size:.9rem; color:#bfbfbf; margin-bottom:6px; }
+    .filters input, .filters select {
+      width:100%; padding:10px 12px; border-radius:10px; background:#050505; color:#d1d5db;
+      border:1px solid #2a2a2a; outline:none; transition:.2s;
+    }
+    .filters input:focus, .filters select:focus { border-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+    .filters .toggle { display:flex; align-items:center; gap:8px; padding-top: 22px; }
+    .filters .btn-clear { margin-top:22px; border:1px solid var(--neon-purple); color:var(--neon-purple);
+      padding:10px 14px; border-radius:999px; background:transparent; cursor:pointer; transition:.2s; }
+    .filters .btn-clear:hover { color:var(--neon-green); border-color:var(--neon-green); box-shadow:0 0 12px var(--neon-green); }
+
+    .stock-grid { max-width: 1100px; margin: 20px auto 60px;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; }
+    .stock-card { background:#090909; border:2px solid var(--neon-purple);
+      box-shadow:0 0 15px var(--neon-purple); border-radius:14px; overflow:hidden; position:relative; transition:.25s; }
+    .stock-card:hover { transform: translateY(-4px); box-shadow: 0 0 24px var(--neon-green); }
+    .stock-thumb { width:100%; height:210px; object-fit:cover; filter:brightness(.95); }
+    .stock-body { padding:14px; display:flex; flex-direction:column; gap:8px; }
+    .stock-title { color: var(--neon-green); font-weight:700; text-shadow:0 0 10px var(--neon-green); }
+    .stock-meta { font-size:.9rem; color:#bdbdbd; }
+    .badge { position:absolute; top:10px; left:10px; padding:6px 10px; border-radius:999px; font-size:.8rem; font-weight:700; }
+    .in { background: rgba(0,255,153,.12); color: var(--neon-green); border:1px solid var(--neon-green); box-shadow:0 0 10px var(--neon-green); }
+    .out { background: rgba(176,38,255,.12); color: var(--neon-purple); border:1px solid var(--neon-purple); box-shadow:0 0 10px var(--neon-purple); }
+    .price { color:#fff; font-weight:800; letter-spacing:.3px; }
+    .qty { color:#a7a7a7; }
+    .stock-actions { display:flex; gap:10px; margin-top:8px; }
+    .btn-add { background: var(--neon-green); color:#000; border:none; border-radius:10px; padding:10px 12px; font-weight:700; cursor:pointer; box-shadow:0 0 12px var(--neon-green); }
+    .btn-add:hover { background: var(--neon-purple); color:#fff; box-shadow:0 0 15px var(--neon-purple); }
+    .empty { text-align:center; color:#d1d1d1; margin:40px 0; }
+  </style>
+</head>
+
+<body class="home">
+  <!-- ===== HERO (small) ===== -->
+  <header class="hero stock-hero">
+    <div class="hero-content">
+      <div class="hero-logo-wrapper">
+        <div class="neon-stripe left"></div>
+        <img src="images/logo.png" alt="Nerd Haven Logo" class="hero-logo">
+        <div class="neon-stripe right"></div>
+      </div>
+      <h1>📦 Stock & Inventory</h1>
+      <p>Real-time inventory of toys, games & collectibles.</p>
+      <div class="hero-buttons" style="margin-top:10px;">
+        <a href="index.html" class="btn-secondary"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="shop.html" class="btn-primary"><i class="fa-solid fa-cart-shopping"></i> Shop</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== FILTERS ===== -->
+  <section class="filters">
+    <div>
+      <label for="search">Search</label>
+      <input id="search" type="text" placeholder="Search by name, series, brand…">
+    </div>
+
+    <div>
+      <label for="category">Category</label>
+      <select id="category">
+        <option value="">All</option>
+        <option>Action Figures</option>
+        <option>Board Games</option>
+        <option>Plushies</option>
+        <option>Anime Figures</option>
+        <option>Building Sets</option>
+        <option>Trading Cards</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="sort">Sort</label>
+      <select id="sort">
+        <option value="recent">Newest</option>
+        <option value="priceasc">Price: Low → High</option>
+        <option value="pricedesc">Price: High → Low</option>
+        <option value="alpha">Name A–Z</option>
+        <option value="stockdesc">Stock: High → Low</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="maxPrice">Max Price (€)</label>
+      <input id="maxPrice" type="number" min="0" step="1" placeholder="e.g. 80">
+    </div>
+
+    <div class="toggle">
+      <input id="onlyInStock" type="checkbox">
+      <label for="onlyInStock">Only in stock</label>
+    </div>
+
+    <button class="btn-clear" id="clearFilters"><i class="fa-solid fa-eraser"></i> Clear filters</button>
+  </section>
+
+  <!-- ===== GRID ===== -->
+  <section class="stock-grid" id="grid"></section>
+  <p class="empty" id="empty" style="display:none;">No products match your filters.</p>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>© 2025 Nerd Haven. All rights reserved.</p>
+    <p>Website by <a href="#">Web Builder ALP</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></p>
+  </footer>
+
+  <!-- ===== PAGE SCRIPT ===== -->
+  <script>
+    // --- Demo Inventory (edit freely or load from JSON) ---
+    const PRODUCTS = [
+      { id: 1, name: "LEGO Star Wars X-Wing", category: "Building Sets", brand: "LEGO", price: 89.90, qty: 7, img: "images/lego.jpg", series:"Star Wars", added:"2025-10-01" },
+      { id: 2, name: "Funko Pop: Spider-Man #1234", category: "Action Figures", brand: "Funko", price: 14.90, qty: 0, img: "images/funko.jpg", series:"Marvel", added:"2025-10-10" },
+      { id: 3, name: "Gundam RX-78-2 Master Grade", category: "Anime Figures", brand: "Bandai", price: 59.00, qty: 12, img: "images/anime.jpg", series:"Gundam", added:"2025-09-20" },
+      { id: 4, name: "Catan (Base Game)", category: "Board Games", brand: "Kosmos", price: 39.90, qty: 4, img: "images/boardgames.jpg", series:"Catan", added:"2025-09-28" },
+      { id: 5, name: "Pikachu Plush 30cm", category: "Plushies", brand: "Pokémon", price: 24.90, qty: 18, img: "images/plushies.jpg", series:"Pokémon", added:"2025-10-18" },
+      { id: 6, name: "One Piece – Luffy Figure", category: "Anime Figures", brand: "Banpresto", price: 32.00, qty: 5, img: "images/animefigures.jpg", series:"One Piece", added:"2025-10-22" },
+      { id: 7, name: "MTG Starter Kit 2025", category: "Trading Cards", brand: "Wizards", price: 21.90, qty: 9, img: "images/cards.jpg", series:"Magic: The Gathering", added:"2025-11-01" },
+      { id: 8, name: "Warhammer 40K: Starter Set", category: "Board Games", brand: "Games Workshop", price: 119.00, qty: 2, img: "images/warhammer.jpg", series:"WH40K", added:"2025-08-30" },
+      { id: 9, name: "Grogu Plush (The Child)", category: "Plushies", brand: "Disney", price: 29.90, qty: 0, img: "images/grogu.jpg", series:"Star Wars", added:"2025-09-05" }
+    ];
+
+    // --- Elements
+    const grid = document.getElementById("grid");
+    const emptyState = document.getElementById("empty");
+    const searchEl = document.getElementById("search");
+    const catEl = document.getElementById("category");
+    const sortEl = document.getElementById("sort");
+    const maxPriceEl = document.getElementById("maxPrice");
+    const inStockEl = document.getElementById("onlyInStock");
+    const clearBtn = document.getElementById("clearFilters");
+
+    // --- Render
+    function render(list){
+      grid.innerHTML = "";
+      if(!list.length){ emptyState.style.display="block"; return; }
+      emptyState.style.display="none";
+      for(const p of list){
+        const card = document.createElement("article");
+        card.className = "stock-card";
+        card.innerHTML = `
+          <span class="badge ${p.qty>0 ? 'in' : 'out'}">${p.qty>0 ? 'IN STOCK' : 'OUT OF STOCK'}</span>
+          <img class="stock-thumb" src="${p.img}" alt="${p.name}">
+          <div class="stock-body">
+            <div class="stock-title">${p.name}</div>
+            <div class="stock-meta">${p.brand} • ${p.series || ''}</div>
+            <div class="price">€${p.price.toFixed(2)}</div>
+            <div class="qty">${p.qty>0 ? p.qty+' pcs available' : 'Back soon'}</div>
+            <div class="stock-actions">
+              <button class="btn-add" ${p.qty===0 ? 'disabled style="opacity:.5;cursor:not-allowed;"':''}>
+                <i class="fa-solid fa-cart-plus"></i> Add
+              </button>
+              <a class="btn-secondary" href="product.html?id=${p.id}" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;padding:10px 12px;">
+                <i class="fa-solid fa-circle-info"></i> Details
+              </a>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      }
+    }
+
+    // --- Filtering / Sorting
+    function apply(){
+      const q = searchEl.value.trim().toLowerCase();
+      const cat = catEl.value;
+      const maxP = parseFloat(maxPriceEl.value);
+      const only = inStockEl.checked;
+
+      let list = PRODUCTS.filter(p => {
+        const text = (p.name + " " + p.brand + " " + (p.series||"")).toLowerCase();
+        if(q && !text.includes(q)) return false;
+        if(cat && p.category !== cat) return false;
+        if(!isNaN(maxP) && p.price > maxP) return false;
+        if(only && p.qty <= 0) return false;
+        return true;
+      });
+
+      switch(sortEl.value){
+        case "priceasc": list.sort((a,b)=>a.price-b.price); break;
+        case "pricedesc": list.sort((a,b)=>b.price-a.price); break;
+        case "alpha": list.sort((a,b)=>a.name.localeCompare(b.name)); break;
+        case "stockdesc": list.sort((a,b)=>b.qty-a.qty); break;
+        default: list.sort((a,b)=> new Date(b.added)-new Date(a.added)); // recent
+      }
+
+      render(list);
+      // Save UI state
+      localStorage.setItem("nh_stock_filters", JSON.stringify({
+        q, cat, sort: sortEl.value, max: maxPriceEl.value, only
+      }));
+    }
+
+    // --- Restore filters on load
+    (function restore(){
+      const saved = localStorage.getItem("nh_stock_filters");
+      if(saved){
+        try{
+          const s = JSON.parse(saved);
+          if(s.q !== undefined) searchEl.value = s.q;
+          if(s.cat) catEl.value = s.cat;
+          if(s.sort) sortEl.value = s.sort;
+          if(s.max !== undefined) maxPriceEl.value = s.max;
+          if(s.only !== undefined) inStockEl.checked = s.only;
+        }catch{}
+      }
+    })();
+
+    // --- Events
+    [searchEl, catEl, sortEl, maxPriceEl, inStockEl].forEach(el => {
+      el.addEventListener("input", apply);
+      el.addEventListener("change", apply);
+    });
+
+    clearBtn.addEventListener("click", ()=>{
+      searchEl.value = "";
+      catEl.value = "";
+      sortEl.value = "recent";
+      maxPriceEl.value = "";
+      inStockEl.checked = false;
+      apply();
+    });
+
+    // Initial render
+    apply();
+  </script>
+</body>
+</html>
