@@ -14,9 +14,10 @@ body {
   line-height: 1.6;
   opacity: 0;
   animation: fadeIn 1s ease-out forwards;
+  overflow-x: hidden;
 }
 
-/* Neon colors */
+/* Neon color variables */
 :root {
   --neon-green: #00ff99;
   --neon-purple: #b026ff;
@@ -27,28 +28,60 @@ body {
    HERO SECTION
 ========================== */
 .hero {
-  background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+  background: radial-gradient(circle at center, #050505 0%, #000 100%);
   color: var(--neon-green);
   text-align: center;
   padding: 120px 20px;
   border-bottom: 2px solid var(--neon-purple);
   box-shadow: 0 0 25px var(--neon-purple);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated floating background lines */
+.hero::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(176, 38, 255, 0.05) 0,
+    rgba(176, 38, 255, 0.05) 2px,
+    transparent 2px,
+    transparent 10px
+  );
+  animation: moveBg 20s linear infinite;
+  z-index: 0;
+}
+@keyframes moveBg {
+  from { transform: translate(0, 0); }
+  to { transform: translate(50px, 50px); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .hero h1 {
   font-size: 3rem;
   color: var(--neon-green);
-  text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+  text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green);
   margin-bottom: 15px;
+  animation: flicker 3s infinite;
 }
 
 .hero p {
   color: var(--neon-purple);
   font-size: 1.2rem;
   margin-bottom: 30px;
+  text-shadow: 0 0 10px var(--neon-purple);
 }
 
-/* Logo stripes */
+/* Logo + stripes */
 .hero-logo-wrapper {
   display: flex;
   justify-content: center;
@@ -62,12 +95,12 @@ body {
   height: 4px;
   border-radius: 5px;
   background: var(--neon-green);
-  box-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green);
+  box-shadow: 0 0 25px var(--neon-green);
   animation: pulse 2s infinite alternate;
 }
 
 @keyframes pulse {
-  from { opacity: 0.6; transform: scaleX(0.9); }
+  from { opacity: 0.5; transform: scaleX(0.9); }
   to { opacity: 1; transform: scaleX(1.1); }
 }
 
@@ -94,18 +127,22 @@ body {
   border-radius: 30px;
   padding: 12px 24px;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
   background: var(--neon-green);
   color: #000;
-  box-shadow: 0 0 15px var(--neon-green);
+  box-shadow: 0 0 20px var(--neon-green);
+  animation: glowPulse 2s infinite alternate;
 }
 
 .btn-primary:hover {
   background: var(--neon-purple);
-  color: white;
-  box-shadow: 0 0 20px var(--neon-purple);
+  color: #fff;
+  box-shadow: 0 0 25px var(--neon-purple);
+  animation: flicker 1.2s infinite;
 }
 
 .btn-secondary {
@@ -116,6 +153,22 @@ body {
 .btn-secondary:hover {
   color: var(--neon-green);
   border-color: var(--neon-green);
+  box-shadow: 0 0 15px var(--neon-green);
+  animation: flicker 1.5s infinite;
+}
+
+@keyframes glowPulse {
+  from { box-shadow: 0 0 10px var(--neon-green); }
+  to { box-shadow: 0 0 25px var(--neon-green); }
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    opacity: 0.3;
+  }
 }
 
 /* ==========================
@@ -129,7 +182,7 @@ body {
 
 .gallery-section h2 {
   color: var(--neon-purple);
-  text-shadow: 0 0 10px var(--neon-purple);
+  text-shadow: 0 0 15px var(--neon-purple);
   margin-bottom: 25px;
 }
 
@@ -137,6 +190,7 @@ body {
   position: relative;
   width: 100%;
   height: 70vh;
+  overflow: hidden;
 }
 
 .gallery-wrapper img {
@@ -146,29 +200,33 @@ body {
   object-fit: cover;
   opacity: 0;
   transition: opacity 1s;
+  filter: brightness(0.8);
 }
 
 .gallery-wrapper img.active {
   opacity: 1;
+  filter: brightness(1);
 }
 
 .gallery-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 255, 153, 0.2);
-  border: 1px solid var(--neon-green);
-  color: var(--neon-green);
+  background: rgba(176, 38, 255, 0.15);
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
   font-size: 2rem;
   padding: 15px;
   border-radius: 50%;
   cursor: pointer;
   transition: 0.3s;
+  box-shadow: 0 0 15px var(--neon-purple);
 }
 
 .gallery-btn:hover {
   background: var(--neon-green);
   color: #000;
+  box-shadow: 0 0 20px var(--neon-green);
 }
 
 .gallery-btn.prev { left: 20px; }
@@ -185,7 +243,7 @@ body {
 
 .about h2 {
   color: var(--neon-green);
-  text-shadow: 0 0 10px var(--neon-green);
+  text-shadow: 0 0 15px var(--neon-green);
   margin-bottom: 20px;
 }
 
@@ -196,7 +254,7 @@ body {
 }
 
 /* ==========================
-   CATEGORIES
+   CATEGORIES (GLOW CARDS)
 ========================== */
 .services {
   padding: 60px 20px;
@@ -207,6 +265,7 @@ body {
 .services h2 {
   color: var(--neon-purple);
   margin-bottom: 40px;
+  text-shadow: 0 0 15px var(--neon-purple);
 }
 
 .service-grid {
@@ -221,9 +280,10 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-  border: 2px solid var(--neon-purple);
+  background: #0a0a0a;
   box-shadow: 0 0 15px var(--neon-purple);
-  transition: 0.3s;
+  border: 2px solid var(--neon-purple);
+  transition: transform 0.3s ease;
 }
 
 .service-card img {
@@ -233,9 +293,30 @@ body {
   opacity: 0.8;
 }
 
+.service-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  border: 2px solid var(--neon-green);
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.service-card:hover::after {
+  opacity: 1;
+  animation: borderGlow 1.5s infinite alternate;
+}
+
 .service-card:hover {
   transform: scale(1.05);
   box-shadow: 0 0 25px var(--neon-green);
+}
+
+@keyframes borderGlow {
+  from { box-shadow: 0 0 15px var(--neon-green); }
+  to { box-shadow: 0 0 35px var(--neon-purple); }
 }
 
 .overlay {
@@ -244,7 +325,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   opacity: 0;
   transition: opacity 0.4s;
 }
@@ -268,7 +349,7 @@ body {
 .contact-section h2 {
   text-align: center;
   color: var(--neon-green);
-  text-shadow: 0 0 10px var(--neon-green);
+  text-shadow: 0 0 15px var(--neon-green);
   margin-bottom: 30px;
 }
 
@@ -288,6 +369,7 @@ body {
 .contact-info a:hover,
 .social-icons a:hover {
   color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green);
 }
 
 .social-icons {
@@ -307,14 +389,17 @@ footer {
   padding: 20px;
   font-size: 0.9rem;
   border-top: 1px solid var(--neon-purple);
+  box-shadow: 0 0 20px var(--neon-purple);
 }
 
 footer a {
   color: var(--neon-purple);
+  transition: 0.3s;
 }
 
 footer a:hover {
   color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green);
 }
 
 /* ==========================
